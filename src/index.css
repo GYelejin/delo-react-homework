@@ -1,0 +1,55 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.theme-light {
+  color: #111820;
+  background-color: #f7f3eb;
+}
+
+.theme-dark {
+  color: #f7f3eb;
+  background-color: #111820;
+}
+
+header {
+  height: 90px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: bisque;
+}
+
+.todo-list{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  /* width: 400px; */
+}
+
+.todo-item{
+  padding: 10px;
+  margin: 10px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  background-color: rgba(171, 214, 252, 0.462);
+  border-radius: 15px;
+}
+
+.add-form{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  height: 70px;
+}
+
+
