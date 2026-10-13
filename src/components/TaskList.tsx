@@ -13,7 +13,7 @@ function TaskList({ tasks }: TaskListProps) {
     const { theme } = useContext(ThemeContext)
 
     return (
-        <div className={`todo-list theme-${theme}`}>
+        <div className={`todo-list todo-list-${theme}`}>
             {tasks.map((task) => <TaskItem key={task.id} id={task.id} title={task.title} done={task.done} />)}
         </div>
     )

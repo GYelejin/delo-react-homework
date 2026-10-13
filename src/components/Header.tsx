@@ -10,7 +10,7 @@ function Header() {
     }
     return (
 
-        <header className={`theme-${theme}`}>
+        <header className={`header-${theme}`}>
             <h2>Task manager</h2>
             <label>
                     <input

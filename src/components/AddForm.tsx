@@ -9,7 +9,7 @@ function AddForm({ addTask }: AddFormProps) {
 
     const { theme } = useContext(ThemeContext)
     return (
-        <div className={`add-form theme-${theme}`}>
+        <div className={`add-form add-form-${theme}`}>
             <input
                 id="task-title"
                 onKeyDown={(event) => {
