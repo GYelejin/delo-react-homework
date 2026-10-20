@@ -13,7 +13,7 @@ type TaskItemProps = {
 function TaskItem({ id, title, done, deleteTask, changeTask }: TaskItemProps) {
     const { theme } = useContext(ThemeContext)
 
-    const deleteHandle = (event: any) => {
+    const deleteHandle = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
         deleteTask(id)
     }
@@ -23,7 +23,11 @@ function TaskItem({ id, title, done, deleteTask, changeTask }: TaskItemProps) {
     }
 
     return (
-        <div onClick={chandgeHandle} className={`todo-item todo-item-${theme}`} style={{backgroundColor: done ? 'green' : 'red' }}>
+        <div
+            onClick={chandgeHandle}
+            className={`todo-item todo-item-${theme}`}
+            style={{ backgroundColor: done ? 'green' : 'red' }}
+        >
             <h3>{title}</h3>
             <button onClick={deleteHandle}>X</button>
         </div>

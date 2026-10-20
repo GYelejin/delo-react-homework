@@ -1,9 +1,10 @@
-import {useState } from 'react'
+import { useEffect, useState } from 'react'
 import Header from './Header'
 import '../index.css'
 import TaskList from './TaskList';
 import AddForm from './AddForm';
 import { ThemeContext } from '../context/themeContext';
+import { fetchTodos } from '../api/todos.api';
 
 
 export type Task = {
@@ -39,14 +40,29 @@ function App() {
 
   const changeTask = (id: string) => {
     const changedTasks = tasks.map((task) => {
-      if (task.id === id){
+      if (task.id === id) {
         task.done = !task.done
       }
       return task
     })
     setTasks(changedTasks)
-
   }
+
+  const fetchData = async () => {
+    const data = await fetchTodos()
+    setTasks(data)
+  }
+
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('tasks')
+    setTasks(JSON.parse(savedTasks ?? '[]'))
+    // fetchData()
+  }, [])
+
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }, [tasks])
 
   return (
     <>
@@ -54,7 +70,7 @@ function App() {
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <Header />
         <AddForm addTask={addTask} />
-        <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask}/>
+        <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask} />
       </ThemeContext.Provider>
     </>
   );
