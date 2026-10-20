@@ -8,6 +8,7 @@ function Header() {
     const toggleTheme = () => {
         setTheme(theme === 'light' ? 'dark' : 'light')
     }
+    
     return (
 
         <header className={`header-${theme}`}>

@@ -14,8 +14,8 @@ export type Task = {
 
 const defaultTasks: Task[] = [
   { id: '1', title: 'Title 1', done: true },
-  { id: '2', title: 'Title 2', done: true },
-  { id: '2', title: 'Title 3', done: true },
+  { id: '2', title: 'Title 2', done: false },
+  { id: '3', title: 'Title 3', done: true },
 ]
 
 function App() {
@@ -32,13 +32,29 @@ function App() {
     setTasks([...tasks, newTask])
   }
 
+  const deleteTask = (id: string) => {
+    const changedTasks = tasks.filter((task) => task.id !== id)
+    setTasks(changedTasks)
+  }
+
+  const changeTask = (id: string) => {
+    const changedTasks = tasks.map((task) => {
+      if (task.id === id){
+        task.done = !task.done
+      }
+      return task
+    })
+    setTasks(changedTasks)
+
+  }
+
   return (
     <>
       {/* Provider - "облако", в которое мы помещаем состояние и сетСтейт для дочерних компонентов  */}
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <Header />
         <AddForm addTask={addTask} />
-        <TaskList tasks={tasks} />
+        <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask}/>
       </ThemeContext.Provider>
     </>
   );

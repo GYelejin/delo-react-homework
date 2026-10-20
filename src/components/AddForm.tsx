@@ -3,11 +3,14 @@ import { ThemeContext } from "../context/themeContext";
 
 type AddFormProps = {
     addTask: (title: string) => void
+
 }
 
 function AddForm({ addTask }: AddFormProps) {
 
     const { theme } = useContext(ThemeContext)
+
+    
     return (
         <div className={`add-form add-form-${theme}`}>
             <input

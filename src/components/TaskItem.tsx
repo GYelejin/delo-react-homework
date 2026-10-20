@@ -4,16 +4,28 @@ import { ThemeContext } from "../context/themeContext"
 type TaskItemProps = {
     id: string,
     title: string,
-    done: boolean
+    done: boolean,
+    deleteTask: (id: string) => void,
+    changeTask: (id: string) => void,
+
 }
 
-function TaskItem({id, title, done}:TaskItemProps){
+function TaskItem({ id, title, done, deleteTask, changeTask }: TaskItemProps) {
     const { theme } = useContext(ThemeContext)
 
+    const deleteHandle = (event: any) => {
+        event.stopPropagation()
+        deleteTask(id)
+    }
+
+    const chandgeHandle = () => {
+        changeTask(id)
+    }
+
     return (
-        <div className={`todo-item todo-item-${theme}`}>
+        <div onClick={chandgeHandle} className={`todo-item todo-item-${theme}`} style={{backgroundColor: done ? 'green' : 'red' }}>
             <h3>{title}</h3>
-            <p>{done+''}</p>
+            <button onClick={deleteHandle}>X</button>
         </div>
     )
 }

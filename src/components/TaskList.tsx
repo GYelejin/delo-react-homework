@@ -4,17 +4,28 @@ import TaskItem from "./TaskItem"
 import { ThemeContext } from "../context/themeContext"
 
 type TaskListProps = {
-    tasks: Task[]
+    tasks: Task[],
+    deleteTask: (id: string) => void,
+    changeTask: (id: string) => void,
 }
 
-function TaskList({ tasks }: TaskListProps) {
+function TaskList({ tasks, deleteTask, changeTask }: TaskListProps) {
 
     // Пример получение данных из контекста, вместо props
     const { theme } = useContext(ThemeContext)
 
     return (
         <div className={`todo-list todo-list-${theme}`}>
-            {tasks.map((task) => <TaskItem key={task.id} id={task.id} title={task.title} done={task.done} />)}
+            {tasks.map((task) => (
+                <TaskItem
+                    key={task.id}
+                    id={task.id}
+                    title={task.title}
+                    done={task.done}
+                    deleteTask={deleteTask}
+                    changeTask={changeTask}
+                />
+            ))}
         </div>
     )
 }
