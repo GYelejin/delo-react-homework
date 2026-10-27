@@ -1,93 +1,121 @@
-import { useEffect, useState } from 'react'
-import Header from './Header'
-import '../index.css'
+import { useState, useEffect } from 'react';
+import Header from './Header';
+import '../index.css';
 import TaskList from './TaskList';
 import AddForm from './AddForm';
-import { ThemeContext } from '../context/themeContext';
-import { fetchTodos } from '../api/todos.api';
+import { ThemeContext, type ThemeType } from '../context/themeContext';
+import { fetchTodos, type ApiTodo } from '../api/todos.api';
 
+export type Task = ApiTodo;
 
-export type Task = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
-
-// const defaultTasks: Task[] = [
-//   { id: '1', title: 'Title 1', done: true },
-//   { id: '2', title: 'Title 2', done: false },
-//   { id: '3', title: 'Title 3', done: true },
-// ]
+export type ApiStatus = 'idle' | 'loading' | 'success' | 'error';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  // Состояние для переключение контеста
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [theme, setTheme] = useState<ThemeType>('light');
+  const [apiStatus, setApiStatus] = useState<ApiStatus>('idle');
 
+  // Добавление задачи
   const addTask = (title: string) => {
+    if (!title.trim()) return;
     const newTask: Task = {
-      id: Date.now(),
-      title: title,
-      completed: false
-    }
-    setTasks([...tasks, newTask])
-  }
+      userId: 1,
+      id: Date.now(), // Используем Date.now() по ТЗ как уникальный ID
+      title: title.trim(),
+      completed: false,
+    };
+    setTasks((prev) => [newTask, ...prev]);
+  };
 
+  // Удаление задачи
   const deleteTask = (id: number) => {
-    const changedTasks = tasks.filter((task) => task.id !== id)
-    setTasks(changedTasks)
-  }
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+  };
 
+  // Смена статуса задачи (completed / done)
   const changeTask = (id: number) => {
-    const changedTasks = tasks.map((task) => {
-      if (task.id === id) {
-        task.completed = !task.completed
-      }
-      return task
-    })
-    setTasks(changedTasks)
-  }
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
 
-  const fetchData = async () => {
-    setStatus('loading');
+  // Загрузка данных из API
+  const loadNetworkData = async () => {
+    setApiStatus('loading');
     try {
-      const items = await fetchTodos();
-      setTasks(items);
-      setStatus('success');
-    } catch {
-      setStatus('error');
+      const data = await fetchTodos();
+      setTasks(data);
+      setApiStatus('success');
+    } catch (err) {
+      console.error('Ошибка загрузки данных:', err);
+      setApiStatus('error');
     }
-  }
+  };
 
-
+  // 2-уровень: Алгоритм работы с localStorage и useEffect
+  // Если локальное хранилище пустое — выполняем сетевой запрос к API
   useEffect(() => {
-    // const savedTasks = localStorage.getItem('tasks')
-    // setTasks(JSON.parse(savedTasks ?? '[]'))
-    // fetchData()
-    fetchData()
-  }, [])
+    const saved = localStorage.getItem('tasks');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTasks(parsed);
+          setApiStatus('success');
+          return;
+        }
+      } catch (e) {
+        console.error('Ошибка парсинга localStorage:', e);
+      }
+    }
+    // Если состояние пустое в localStorage — выполняем сетевой запрос
+    loadNetworkData();
+  }, []);
 
-
+  // Синхронизация tasks в localStorage
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks))
-  }, [tasks])
+    if (tasks.length > 0 || apiStatus === 'success') {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+  }, [tasks, apiStatus]);
 
   return (
-    <>
-      {/* Provider - "облако", в которое мы помещаем состояние и сетСтейт для дочерних компонентов  */}
-      <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, deleteTask, changeTask }}>
+      <div className={`app-container app-${theme}`}>
         <Header />
         <AddForm addTask={addTask} />
-        {status === 'error' && <h2>Ошибка!</h2>}
-        {status === 'loading' && <h2>Загрузка.....</h2>}
-        {status === 'success' &&  <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask} />}
-        {/* { 1 === 1 ? <p>1</p> : <p>2</p>}
-        <p>{1===1 ? '1' : '2'}</p> */}
-      </ThemeContext.Provider>
-    </>
+
+        {/* Индикатор статуса сетевого запроса по ТЗ */}
+        {apiStatus === 'loading' && (
+          <div style={{ textAlign: 'center', padding: '20px', fontSize: '18px', color: '#3498db' }}>
+            ⏳ Загрузка задач из сети...
+          </div>
+        )}
+
+        {apiStatus === 'error' && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#e74c3c' }}>
+            ❌ Произошла ошибка при загрузке задач.{' '}
+            <button
+              onClick={loadNetworkData}
+              style={{
+                marginLeft: '10px',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                borderRadius: '4px',
+              }}
+            >
+              Повторить
+            </button>
+          </div>
+        )}
+
+        {/* Основной список задач */}
+        <TaskList tasks={tasks} />
+      </div>
+    </ThemeContext.Provider>
   );
 }
 
-
-export default App
+export default App;
