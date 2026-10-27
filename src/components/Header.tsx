@@ -2,27 +2,18 @@ import { useContext } from "react"
 import { ThemeContext } from "../context/themeContext"
 
 function Header() {
-    // Пример получение данных из контекста, вместо props
-    const { theme, setTheme } = useContext(ThemeContext)
+    const context = useContext(ThemeContext);
+    const theme = context?.theme ?? 'light';
+    const setTheme = context?.setTheme ?? (() => {});
 
-    const toggleTheme = () => {
-        setTheme(theme === 'light' ? 'dark' : 'light')
-    }
-    
     return (
-
-        <header className={`header-${theme}`}>
-            <h2>Task manager</h2>
-            <label>
-                    <input
-                        type="checkbox" role="switch"
-                        checked={theme === 'dark'}
-                        onChange={toggleTheme}
-                    />
-                    Темная тема
-            </label>
+        <header className={`header header-${theme}`}>
+            <h1>Менеджер задач</h1>
+            <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                Сменить тему ({theme === 'light' ? 'Тёмная' : 'Светлая'})
+            </button>
         </header>
     )
 }
 
-export default Header
+export default Header;
