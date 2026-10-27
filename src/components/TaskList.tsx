@@ -5,8 +5,8 @@ import { ThemeContext } from "../context/themeContext"
 
 type TaskListProps = {
     tasks: Task[],
-    deleteTask: (id: string) => void,
-    changeTask: (id: string) => void,
+    deleteTask: (id: number) => void,
+    changeTask: (id: number) => void,
 }
 
 function TaskList({ tasks, deleteTask, changeTask }: TaskListProps) {
@@ -21,7 +21,7 @@ function TaskList({ tasks, deleteTask, changeTask }: TaskListProps) {
                     key={task.id}
                     id={task.id}
                     title={task.title}
-                    done={task.done}
+                    completed={task.completed}
                     deleteTask={deleteTask}
                     changeTask={changeTask}
                 />

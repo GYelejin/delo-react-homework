@@ -2,15 +2,15 @@ import { useContext } from "react"
 import { ThemeContext } from "../context/themeContext"
 
 type TaskItemProps = {
-    id: string,
+    id: number,
     title: string,
-    done: boolean,
-    deleteTask: (id: string) => void,
-    changeTask: (id: string) => void,
+    completed: boolean,
+    deleteTask: (id: number) => void,
+    changeTask: (id: number) => void,
 
 }
 
-function TaskItem({ id, title, done, deleteTask, changeTask }: TaskItemProps) {
+function TaskItem({ id, title, completed, deleteTask, changeTask }: TaskItemProps) {
     const { theme } = useContext(ThemeContext)
 
     const deleteHandle = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,7 +26,7 @@ function TaskItem({ id, title, done, deleteTask, changeTask }: TaskItemProps) {
         <div
             onClick={chandgeHandle}
             className={`todo-item todo-item-${theme}`}
-            style={{ backgroundColor: done ? 'green' : 'red' }}
+            style={{ backgroundColor: completed ? 'green' : 'red' }}
         >
             <h3>{title}</h3>
             <button onClick={deleteHandle}>X</button>

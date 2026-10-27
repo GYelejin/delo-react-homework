@@ -8,40 +8,41 @@ import { fetchTodos } from '../api/todos.api';
 
 
 export type Task = {
-  id: string;
+  id: number;
   title: string;
-  done: boolean;
+  completed: boolean;
 };
 
-const defaultTasks: Task[] = [
-  { id: '1', title: 'Title 1', done: true },
-  { id: '2', title: 'Title 2', done: false },
-  { id: '3', title: 'Title 3', done: true },
-]
+// const defaultTasks: Task[] = [
+//   { id: '1', title: 'Title 1', done: true },
+//   { id: '2', title: 'Title 2', done: false },
+//   { id: '3', title: 'Title 3', done: true },
+// ]
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>(defaultTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   // Состояние для переключение контеста
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const addTask = (title: string) => {
     const newTask: Task = {
-      id: crypto.randomUUID(),
+      id: Date.now(),
       title: title,
-      done: false
+      completed: false
     }
     setTasks([...tasks, newTask])
   }
 
-  const deleteTask = (id: string) => {
+  const deleteTask = (id: number) => {
     const changedTasks = tasks.filter((task) => task.id !== id)
     setTasks(changedTasks)
   }
 
-  const changeTask = (id: string) => {
+  const changeTask = (id: number) => {
     const changedTasks = tasks.map((task) => {
       if (task.id === id) {
-        task.done = !task.done
+        task.completed = !task.completed
       }
       return task
     })
@@ -49,14 +50,22 @@ function App() {
   }
 
   const fetchData = async () => {
-    const data = await fetchTodos()
-    setTasks(data)
+    setStatus('loading');
+    try {
+      const items = await fetchTodos();
+      setTasks(items);
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
   }
 
+
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks')
-    setTasks(JSON.parse(savedTasks ?? '[]'))
+    // const savedTasks = localStorage.getItem('tasks')
+    // setTasks(JSON.parse(savedTasks ?? '[]'))
     // fetchData()
+    fetchData()
   }, [])
 
 
@@ -70,7 +79,11 @@ function App() {
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <Header />
         <AddForm addTask={addTask} />
-        <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask} />
+        {status === 'error' && <h2>Ошибка!</h2>}
+        {status === 'loading' && <h2>Загрузка.....</h2>}
+        {status === 'success' &&  <TaskList tasks={tasks} deleteTask={deleteTask} changeTask={changeTask} />}
+        {/* { 1 === 1 ? <p>1</p> : <p>2</p>}
+        <p>{1===1 ? '1' : '2'}</p> */}
       </ThemeContext.Provider>
     </>
   );
